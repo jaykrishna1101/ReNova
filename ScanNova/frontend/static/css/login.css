@@ -6,7 +6,7 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #050A0E;
+    background: #f5f5f5;
     min-height: 100vh;
     display: flex;
     justify-content: center;
@@ -20,12 +20,12 @@ body {
 }
 
 .login-box {
-    background: #121A21;
+    background: #ffffff;
     border-radius: 20px;
     padding: 40px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
     animation: slideUp 0.5s ease-out;
-    border: 1px solid #121A21;
+    border: 1px solid #e0e0e0;
 }
 
 @keyframes slideUp {
@@ -56,12 +56,12 @@ body {
 }
 
 .error-message {
-    background: #062A1F;
-    color: #2ECC71;
+    background: #fee;
+    color: #c33;
     padding: 12px;
     border-radius: 8px;
     margin-bottom: 20px;
-    border-left: 4px solid #00D084;
+    border-left: 4px solid #dc3545;
 }
 
 .login-form {
@@ -85,12 +85,12 @@ body {
 .form-group input,
 .form-group select {
     padding: 12px 15px;
-    border: 2px solid #121A21;
+    border: 2px solid #e0e0e0;
     border-radius: 8px;
     font-size: 1em;
     transition: border-color 0.3s;
-    background: #050A0E;
-    color: #2ECC71;
+    background: #ffffff;
+    color: #333;
 }
 
 .form-group input:focus,
@@ -101,7 +101,7 @@ body {
 
 .login-btn {
     background: #00D084;
-    color: #050A0E;
+    color: #ffffff;
     padding: 14px;
     border: none;
     border-radius: 8px;

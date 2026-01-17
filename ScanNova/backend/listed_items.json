@@ -1,0 +1,29 @@
+[
+  {
+    "components": [
+      "Printed Circuit Boards (PCBs)",
+      "Battery (Lithium-ion)",
+      "Speakers",
+      "Microphone",
+      "Plastic Housing",
+      "Wiring"
+    ],
+    "harmful_substances": [
+      "Lithium",
+      "Lead (in solder)",
+      "Cadmium",
+      "Mercury"
+    ],
+    "product_name": "Wireless Headphones",
+    "recyclable": true,
+    "resell_value": 700,
+    "toxicity_level": "Medium",
+    "location": {
+      "latitude": 21.00526338144944,
+      "longitude": 79.0475738887798,
+      "accuracy": 111
+    },
+    "id": 1768674755855,
+    "listed_at": "2026-01-18 00:02:35"
+  }
+]

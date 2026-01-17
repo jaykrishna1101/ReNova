@@ -73,6 +73,25 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('productName').textContent = data.product_name || 'Unknown';
         document.getElementById('toxicity').textContent = data.toxicity_level || 'N/A';
         document.getElementById('recyclable').textContent = data.recyclable ? 'Yes' : 'No';
+        
+        // Display resell value
+        const resellValueEl = document.getElementById('resellValue');
+        if (data.resell_value !== undefined && data.resell_value !== null) {
+            const value = parseFloat(data.resell_value);
+            if (!isNaN(value) && value > 0) {
+                resellValueEl.textContent = `₹${value.toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
+                resellValueEl.style.color = '#00D084';
+                resellValueEl.style.fontWeight = 'bold';
+            } else {
+                resellValueEl.textContent = 'Not available';
+                resellValueEl.style.color = '#999';
+                resellValueEl.style.fontWeight = 'normal';
+            }
+        } else {
+            resellValueEl.textContent = 'Not available';
+            resellValueEl.style.color = '#999';
+            resellValueEl.style.fontWeight = 'normal';
+        }
 
         const componentsList = document.getElementById('components');
         componentsList.innerHTML = '';
@@ -138,6 +157,39 @@ document.addEventListener('DOMContentLoaded', function() {
         const originalText = listBtn.textContent;
         const productName = data.product_name || 'this item';
         
+        // Get user's location
+        let location = null;
+        try {
+            const position = await new Promise((resolve, reject) => {
+                if (!navigator.geolocation) {
+                    reject(new Error('Geolocation is not supported by your browser'));
+                    return;
+                }
+                navigator.geolocation.getCurrentPosition(resolve, reject, {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 0
+                });
+            });
+            
+            location = {
+                latitude: position.coords.latitude,
+                longitude: position.coords.longitude,
+                accuracy: position.coords.accuracy
+            };
+        } catch (error) {
+            console.error('Error getting location:', error);
+            // Ask user to manually enter location if geolocation fails
+            const locationInput = prompt('Please enter your location (City, State):');
+            if (!locationInput || locationInput.trim() === '') {
+                alert('Location is required to list an item. Please try again.');
+                return;
+            }
+            location = {
+                address: locationInput.trim()
+            };
+        }
+        
         const confirmed = confirm(`Do you want to list "${productName}" for sale?`);
         if (!confirmed) {
             return;
@@ -147,12 +199,18 @@ document.addEventListener('DOMContentLoaded', function() {
         listBtn.textContent = 'Listing...';
 
         try {
+            // Add location to data
+            const itemData = {
+                ...data,
+                location: location
+            };
+            
             const response = await fetch('/list-item', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(data)
+                body: JSON.stringify(itemData)
             });
 
             if (!response.ok) {

@@ -14,7 +14,7 @@ app = Flask(__name__, template_folder='../frontend/templates', static_folder='..
 app.secret_key = 'your-secret-key-change-this-in-production'
 CORS(app)
 
-OPENROUTER_API_KEY = "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"
+OPENROUTER_API_KEY = "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"
 MODEL_ID = "google/gemini-2.0-flash-001"
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 UPLOAD_FOLDER = os.path.join(BASE_DIR, 'uploads')
@@ -55,6 +55,7 @@ def scan_ewaste_api(image_path):
     - toxicity_level: High, Medium, or Low.
     - recyclable: Boolean (true/false).
     - harmful_substances: List of chemicals/metals present.
+    - resell_value: Estimated resell value in Indian Rupees (INR) as a number. Calculate this as 30-35% of the estimated retail value of the device when it was new. Consider the device type, brand, and condition shown in the image.
     """
 
     headers = {
@@ -110,6 +111,18 @@ def scan_ewaste_api(image_path):
                         result['recyclable'] = result['recyclable'].lower() in ('true', 'yes', '1')
                     elif not isinstance(result['recyclable'], bool):
                         result['recyclable'] = False
+                
+                if 'resell_value' in result:
+                    try:
+                        # Convert to number if it's a string
+                        if isinstance(result['resell_value'], str):
+                            # Remove currency symbols and extract number
+                            num_str = re.sub(r'[^\d.]', '', result['resell_value'])
+                            result['resell_value'] = float(num_str) if num_str else 0
+                        elif not isinstance(result['resell_value'], (int, float)):
+                            result['resell_value'] = 0
+                    except (ValueError, TypeError):
+                        result['resell_value'] = 0
                 
                 return result
             except (KeyError, IndexError, json.JSONDecodeError) as e:
@@ -343,6 +356,23 @@ def delete_item():
             
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+@app.route('/health', methods=['GET'])
+def health_check():
+    """Health check endpoint for monitoring"""
+    try:
+        items = load_listed_items()
+        return jsonify({
+            "status": "healthy",
+            "server": "running",
+            "items_count": len(items),
+            "api_key_configured": bool(OPENROUTER_API_KEY)
+        }), 200
+    except Exception as e:
+        return jsonify({
+            "status": "unhealthy",
+            "error": str(e)
+        }), 500
 
 if __name__ == '__main__':
     try:
