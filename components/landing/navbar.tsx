@@ -19,8 +19,9 @@ export function Navbar() {
 
   const navLinks = [
     { href: "/marketplace", label: "Marketplace" },
-    { href: "/ai-analysis", label: "AI Analysis" },
-    { href: "/impact", label: "Impact" },
+    { href: "/sell", label: "Sell E-Waste" },
+    { href: "#impact", label: "Impact", isScroll: true },
+    ...(user ? [{ href: "/listings", label: "My Listings" }] : []),
   ]
 
   useEffect(() => {
@@ -96,15 +97,39 @@ export function Navbar() {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors tracking-wide"
-              >
-                {link.label}
-              </Link>
-            ))}
+            {navLinks.map((link) => {
+              if (link.isScroll) {
+                return (
+                  <button
+                    key={link.href}
+                    onClick={() => {
+                      if (link.href.startsWith("#")) {
+                        const element = document.getElementById(link.href.slice(1))
+                        if (element) {
+                          element.scrollIntoView({ behavior: "smooth" })
+                        } else if (window.location.pathname === "/") {
+                          window.location.href = link.href
+                        } else {
+                          window.location.href = `/${link.href}`
+                        }
+                      }
+                    }}
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors tracking-wide"
+                  >
+                    {link.label}
+                  </button>
+                )
+              }
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors tracking-wide"
+                >
+                  {link.label}
+                </Link>
+              )
+            })}
           </div>
 
           {/* Desktop CTAs */}
@@ -115,18 +140,18 @@ export function Navbar() {
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                   <button
                     className="w-10 h-10 rounded-full bg-primary text-primary-foreground font-semibold flex items-center justify-center hover:bg-primary/90 transition-colors"
-                    title={userName || user.email || "User"}
+                    title={`${userName || user.email || "User"} - View Profile`}
                   >
                     {getInitial()}
                   </button>
                 </motion.div>
               </Link>
             ) : (
-              <Link href="/login">
-                <Button variant="ghost" className="text-muted-foreground hover:text-foreground hover:bg-secondary/50">
-                  Login
-                </Button>
-              </Link>
+            <Link href="/login">
+              <Button variant="ghost" className="text-muted-foreground hover:text-foreground hover:bg-secondary/50">
+                Login
+              </Button>
+            </Link>
             )}
           </div>
 
@@ -148,16 +173,41 @@ export function Navbar() {
             className="md:hidden py-4 border-t border-border"
           >
             <div className="flex flex-col gap-3">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className="text-muted-foreground hover:text-foreground py-2 transition-colors"
-                  onClick={() => setIsOpen(false)}
-                >
-                  {link.label}
-                </Link>
-              ))}
+              {navLinks.map((link) => {
+                if (link.isScroll) {
+                  return (
+                    <button
+                      key={link.href}
+                      onClick={() => {
+                        setIsOpen(false)
+                        if (link.href.startsWith("#")) {
+                          const element = document.getElementById(link.href.slice(1))
+                          if (element) {
+                            element.scrollIntoView({ behavior: "smooth" })
+                          } else if (window.location.pathname === "/") {
+                            window.location.href = link.href
+                          } else {
+                            window.location.href = `/${link.href}`
+                          }
+                        }
+                      }}
+                      className="text-muted-foreground hover:text-foreground py-2 transition-colors text-left"
+                    >
+                      {link.label}
+                    </button>
+                  )
+                }
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className="text-muted-foreground hover:text-foreground py-2 transition-colors"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    {link.label}
+                  </Link>
+                )
+              })}
               <div className="flex flex-col gap-2 pt-4 border-t border-border">
                 <div className="flex items-center gap-2 py-2">
                   <ThemeToggle />
@@ -176,10 +226,10 @@ export function Navbar() {
                   </Link>
                 ) : (
                   <Link href="/login" onClick={() => setIsOpen(false)}>
-                    <Button variant="ghost" className="w-full justify-start text-muted-foreground">
-                      Login
-                    </Button>
-                  </Link>
+                  <Button variant="ghost" className="w-full justify-start text-muted-foreground">
+                    Login
+                  </Button>
+                </Link>
                 )}
               </div>
             </div>

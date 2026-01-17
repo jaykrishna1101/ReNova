@@ -84,7 +84,7 @@ export function SignupForm({ onPasswordFocusChange }: SignupFormProps) {
       setError(errorMessage)
       toast.error(errorMessage)
     } finally {
-      setIsLoading(false)
+    setIsLoading(false)
     }
   }
 
@@ -461,7 +461,7 @@ export function SignupForm({ onPasswordFocusChange }: SignupFormProps) {
           id="terms"
           checked={acceptTerms}
           onCheckedChange={(checked) => setAcceptTerms(checked as boolean)}
-          className="mt-0.5 border-border data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+          className="mt-0.5 border-2 border-primary/30 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
         />
         <Label htmlFor="terms" className="text-sm text-muted-foreground cursor-pointer leading-relaxed">
           I agree to the{" "}

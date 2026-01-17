@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Eye, EyeOff, Mail, Lock, ArrowRight, Loader2, CheckCircle2, Building2, ShoppingBag, Key } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -32,6 +32,14 @@ export function LoginForm({ onPasswordFocusChange }: LoginFormProps) {
   const [rememberMe, setRememberMe] = useState(false)
   const [focusedField, setFocusedField] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const redirect = params.get("redirect")
+    if (redirect && redirect === "/sell") {
+      setUserType("seller")
+    }
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -65,7 +73,13 @@ export function LoginForm({ onPasswordFocusChange }: LoginFormProps) {
         toast.error(result.error)
       } else if (result.user) {
         toast.success("Logged in successfully!")
-        router.push("/")
+        const params = new URLSearchParams(window.location.search)
+        const redirect = params.get("redirect")
+        if (redirect) {
+          router.push(redirect)
+        } else {
+          router.push("/")
+        }
         router.refresh()
       }
     } catch (err) {
@@ -73,7 +87,7 @@ export function LoginForm({ onPasswordFocusChange }: LoginFormProps) {
       setError(errorMessage)
       toast.error(errorMessage)
     } finally {
-      setIsLoading(false)
+    setIsLoading(false)
     }
   }
 
@@ -353,7 +367,7 @@ export function LoginForm({ onPasswordFocusChange }: LoginFormProps) {
           id="remember"
           checked={rememberMe}
           onCheckedChange={(checked) => setRememberMe(checked as boolean)}
-          className="border-border data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+          className="border-2 border-primary/30 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
         />
         <Label htmlFor="remember" className="text-sm text-muted-foreground cursor-pointer">
           Remember me for 30 days

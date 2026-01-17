@@ -5,10 +5,23 @@ import { motion, useScroll, useTransform } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { ArrowRight, Sparkles } from "lucide-react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { getCurrentUser, getUserProfile } from "@/lib/auth"
 
 function DigitalEarth() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
+  const isDarkRef = useRef(true)
+
+  useEffect(() => {
+    const checkTheme = () => {
+      isDarkRef.current = document.documentElement.classList.contains("dark")
+    }
+    checkTheme()
+    const observer = new MutationObserver(checkTheme)
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] })
+    return () => observer.disconnect()
+  }, [])
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -81,10 +94,17 @@ function DigitalEarth() {
       ctx.arc(centerX, centerY, earthRadius * 1.5, 0, Math.PI * 2)
       ctx.fill()
 
-      ctx.fillStyle = "#0f172a"
+      const isDark = isDarkRef.current
+      ctx.fillStyle = isDark ? "#0f172a" : "#f8fafc"
       ctx.beginPath()
       ctx.arc(centerX, centerY, earthRadius, 0, Math.PI * 2)
       ctx.fill()
+      
+      if (!isDark) {
+        ctx.strokeStyle = "rgba(15, 23, 42, 0.1)"
+        ctx.lineWidth = 1
+        ctx.stroke()
+      }
 
       ctx.strokeStyle = "rgba(16, 185, 129, 0.3)"
       ctx.lineWidth = 1
@@ -193,6 +213,10 @@ function DigitalEarth() {
 
 export function HeroSection() {
   const containerRef = useRef<HTMLDivElement>(null)
+  const router = useRouter()
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true)
+  const [isSeller, setIsSeller] = useState(false)
+  const [isBuyer, setIsBuyer] = useState(false)
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end start"],
@@ -200,6 +224,36 @@ export function HeroSection() {
 
   const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0])
   const y = useTransform(scrollYProgress, [0, 0.5], [0, 100])
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const user = await getCurrentUser()
+        if (user) {
+          const { profile } = await getUserProfile(user.id)
+          if (profile?.user_type === "seller") {
+            setIsSeller(true)
+          } else if (profile?.user_type === "buyer") {
+            setIsBuyer(true)
+          }
+        }
+      } catch (error) {
+        console.error("Auth check error:", error)
+      } finally {
+        setIsCheckingAuth(false)
+      }
+    }
+    checkAuth()
+  }, [])
+
+  const handleSellClick = (e: React.MouseEvent) => {
+    e.preventDefault()
+    if (isSeller) {
+      router.push("/sell")
+    } else {
+      router.push("/login?redirect=/sell")
+    }
+  }
 
   return (
     <section
@@ -262,28 +316,33 @@ export function HeroSection() {
             transition={{ duration: 0.6, delay: 0.3 }}
             className="mt-10 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start"
           >
-            <Link href="/signup">
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                 <Button
                   size="lg"
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-6 text-lg font-medium rounded-xl shadow-lg shadow-primary/25"
+                onClick={handleSellClick}
+                className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-6 text-lg font-medium rounded-xl shadow-lg shadow-primary/25"
                 >
                   Sell E-Waste
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </Button>
               </motion.div>
-            </Link>
-            <Link href="/marketplace">
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                 <Button
                   size="lg"
                   variant="outline"
-                  className="border-border text-foreground hover:bg-secondary hover:text-foreground px-8 py-6 text-lg font-medium rounded-xl bg-transparent"
+                onClick={(e) => {
+                  e.preventDefault()
+                  if (isBuyer) {
+                    router.push("/marketplace")
+                  } else {
+                    router.push("/login?redirect=/marketplace")
+                  }
+                }}
+                className="border-border text-foreground hover:bg-secondary hover:text-foreground px-8 py-6 text-lg font-medium rounded-xl bg-transparent"
                 >
                   Explore Marketplace
                 </Button>
               </motion.div>
-            </Link>
           </motion.div>
         </div>
 

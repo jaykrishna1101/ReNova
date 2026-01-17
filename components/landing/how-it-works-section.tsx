@@ -185,8 +185,8 @@ function AIScannerSection() {
                       >
                         <div className="w-1.5 h-1.5 rounded-full bg-orange-500" />
                         <span className="text-sm text-foreground">{substance}</span>
-                      </motion.div>
-                    ))}
+                </motion.div>
+              ))}
                   </div>
                 </div>
               </>
@@ -229,23 +229,23 @@ function ImpactMapSection() {
           { x: "35%", y: "65%" },
           { x: "55%", y: "45%" },
         ].map((pos, i) => (
-            <motion.div
-              key={i}
-              className="absolute"
-              style={{ left: pos.x, top: pos.y }}
-              initial={{ scale: 0 }}
-              animate={isInView ? { scale: 1 } : {}}
-              transition={{ delay: 0.3 + i * 0.1 }}
-            >
-              <div className="relative">
-                <motion.div
+          <motion.div
+            key={i}
+            className="absolute"
+            style={{ left: pos.x, top: pos.y }}
+            initial={{ scale: 0 }}
+            animate={isInView ? { scale: 1 } : {}}
+            transition={{ delay: 0.3 + i * 0.1 }}
+          >
+            <div className="relative">
+              <motion.div
                   className="absolute w-8 h-8 rounded-full bg-primary/30"
-                  animate={{ scale: [1, 2, 1], opacity: [0.5, 0, 0.5] }}
-                  transition={{ repeat: Number.POSITIVE_INFINITY, duration: 2, delay: i * 0.3 }}
-                />
+                animate={{ scale: [1, 2, 1], opacity: [0.5, 0, 0.5] }}
+                transition={{ repeat: Number.POSITIVE_INFINITY, duration: 2, delay: i * 0.3 }}
+              />
                 <div className="w-3 h-3 rounded-full bg-primary shadow-lg shadow-primary/50" />
-              </div>
-            </motion.div>
+            </div>
+          </motion.div>
         ))}
 
         <div
@@ -414,7 +414,7 @@ export function HowItWorksSection() {
       component: <CategoriesSection />,
     },
     {
-      id: "stats",
+      id: "impact",
       title: "Trust & Impact",
       subtitle: "Our Numbers",
       description: "Real metrics that showcase our commitment to responsible e-waste management.",
@@ -444,7 +444,7 @@ export function HowItWorksSection() {
 
       <div className="relative">
         {sections.map((section) => (
-          <div key={section.id} className="relative">
+          <div key={section.id} id={section.id} className="relative">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
