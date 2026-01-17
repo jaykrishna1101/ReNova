@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Waste Scanner - User Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/scanner.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <h2>♻️ ReNova - User Dashboard</h2>
+            <div class="nav-user">
+                <span>Welcome, {{ username }}</span>
+                <a href="/" class="logout-btn">Home</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="scanner-section">
+            <h2>E-Waste Scanner</h2>
+            <div class="video-container">
+                <img id="videoFeed" src="{{ url_for('video_feed') }}" alt="Video Feed" onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22300%22%3E%3Crect fill=%22%23ddd%22 width=%22400%22 height=%22300%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23999%22%3EWebcam not available%3C/text%3E%3C/svg%3E';">
+            </div>
+            <div id="webcamError" class="error-message" style="display: none; margin-top: 10px;">
+                Webcam not available. Please check if your webcam is connected and not being used by another application.
+            </div>
+            
+            <div class="controls">
+                <button id="captureBtn" class="btn btn-primary">📸 Capture & Analyze</button>
+                <label for="fileInput" class="btn btn-secondary">📁 Upload Image</label>
+                <input type="file" id="fileInput" accept="image/png,image/jpeg,image/jpg" style="display: none;">
+            </div>
+        </div>
+
+        <div class="results-section">
+            <h2>Analysis Results</h2>
+            <div id="loading" class="loading" style="display: none;">
+                <div class="spinner"></div>
+                <p>Analyzing e-waste item...</p>
+            </div>
+            
+            <div id="results" class="results" style="display: none;">
+                <div class="result-card">
+                    <h3 id="productName">-</h3>
+                    <div class="result-grid">
+                        <div class="result-item">
+                            <span class="label">Toxicity Level:</span>
+                            <span id="toxicity" class="value">-</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="label">Recyclable:</span>
+                            <span id="recyclable" class="value">-</span>
+                        </div>
+                    </div>
+                    
+                    <div class="result-section">
+                        <h4>Components</h4>
+                        <ul id="components" class="list"></ul>
+                    </div>
+                    
+                    <div class="result-section">
+                        <h4>Harmful Substances</h4>
+                        <ul id="harmfulSubstances" class="list"></ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="error" class="error-message" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/scanner.js') }}"></script>
+</body>
+</html>
+

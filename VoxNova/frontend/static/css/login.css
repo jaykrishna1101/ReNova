@@ -1,0 +1,142 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #050A0E;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.login-container {
+    width: 100%;
+    max-width: 450px;
+}
+
+.login-box {
+    background: #121A21;
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    animation: slideUp 0.5s ease-out;
+    border: 1px solid #121A21;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.logo {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.logo h1 {
+    font-size: 2.5em;
+    color: #00D084;
+    margin-bottom: 5px;
+}
+
+.logo p {
+    color: #2ECC71;
+    font-size: 0.9em;
+}
+
+.error-message {
+    background: #062A1F;
+    color: #2ECC71;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border-left: 4px solid #00D084;
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group label {
+    font-weight: 600;
+    color: #00D084;
+    font-size: 0.9em;
+}
+
+.form-group input,
+.form-group select {
+    padding: 12px 15px;
+    border: 2px solid #121A21;
+    border-radius: 8px;
+    font-size: 1em;
+    transition: border-color 0.3s;
+    background: #050A0E;
+    color: #2ECC71;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #00D084;
+}
+
+.login-btn {
+    background: #00D084;
+    color: #050A0E;
+    padding: 14px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.login-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 208, 132, 0.4);
+    background: #2ECC71;
+}
+
+.login-btn:active {
+    transform: translateY(0);
+}
+
+.demo-credentials {
+    margin-top: 25px;
+    padding-top: 25px;
+    border-top: 1px solid #e0e0e0;
+    text-align: center;
+}
+
+.demo-credentials h3 {
+    font-size: 0.9em;
+    color: #2ECC71;
+    margin-bottom: 10px;
+}
+
+.demo-credentials p {
+    font-size: 0.85em;
+    color: #2ECC71;
+    margin: 5px 0;
+}
+

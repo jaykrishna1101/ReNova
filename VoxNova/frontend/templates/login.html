@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Waste Platform - Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-box">
+            <div class="logo">
+                <h1>♻️ ReNova</h1>
+                <p>E-Waste Management Platform</p>
+            </div>
+            
+            {% if error %}
+            <div class="error-message">{{ error }}</div>
+            {% endif %}
+            
+            <form method="POST" action="/login" class="login-form">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" required autofocus>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="user_type">Login As <span style="color: #00D084;">*</span></label>
+                    <select id="user_type" name="user_type" required>
+                        <option value="">-- Please Select --</option>
+                        <option value="seller">User</option>
+                        <option value="buyer">Recycler</option>
+                    </select>
+                    <small style="color: #666; font-size: 0.85em; display: block; margin-top: 5px;">
+                        ⚠️ You must select User or Recycler before logging in
+                    </small>
+                </div>
+                
+                <button type="submit" class="login-btn">Login</button>
+            </form>
+            
+            <div class="demo-credentials">
+                <h3>Demo Credentials:</h3>
+                <p><strong>User:</strong> seller1 / seller123</p>
+                <p><strong>Recycler:</strong> buyer1 / buyer123</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

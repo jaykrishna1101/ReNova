@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ReNova - E-Waste Platform</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="welcome-box">
+            <div class="logo">
+                <h1>♻️ ReNova</h1>
+                <p>E-Waste Management Platform</p>
+            </div>
+            
+            <div class="selection-box">
+                <h2>Choose Your Role</h2>
+                <p>Select how you want to use the platform</p>
+                
+                <div class="role-buttons">
+                    <a href="/scanner" class="role-btn seller-btn">
+                        <div class="role-icon">📸</div>
+                        <h3>User</h3>
+                        <p>Scan and analyze e-waste items</p>
+                    </a>
+                    
+                    <a href="/buyer-dashboard" class="role-btn buyer-btn">
+                        <div class="role-icon">🛒</div>
+                        <h3>Recycler</h3>
+                        <p>Browse and purchase e-waste items</p>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
