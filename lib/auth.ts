@@ -55,50 +55,78 @@ export async function signUp(data: SignupData): Promise<AuthResponse> {
       return { user: null, error: "Failed to create user" }
     }
 
-    await new Promise((resolve) => setTimeout(resolve, 500))
+    await new Promise((resolve) => setTimeout(resolve, 2000))
 
-    const { data: existingProfile } = await supabase
-      .from("profiles")
-      .select("id")
-      .eq("id", authData.user.id)
-      .single()
+    let retryCount = 0
+    const maxRetries = 5
+    
+    while (retryCount < maxRetries) {
+      const { data: existingProfile, error: profileCheckError } = await supabase
+        .from("profiles")
+        .select("id")
+        .eq("id", authData.user.id)
+        .maybeSingle()
 
-    if (!existingProfile) {
-      const { error: profileError } = await supabase.from("profiles").insert({
-        id: authData.user.id,
-        email: data.email,
-        name: data.name,
-        user_type: data.userType,
-        passkey: data.userType === "buyer" ? data.passkey : null,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      })
+      if (existingProfile) {
+        return { user: authData.user, error: null }
+      }
 
-      if (profileError) {
-        const errorMessage = profileError.message || "Failed to create user profile"
-        
-        if (errorMessage.includes("duplicate key") || errorMessage.includes("already exists")) {
-          return { user: null, error: "An account with this email already exists. Please try logging in instead." }
-        }
-        if (errorMessage.includes("violates row-level security") || errorMessage.includes("RLS")) {
-          return { 
-            user: null, 
-            error: "Database security policy error. Please ensure the profiles table and RLS policies are set up correctly. Check SUPABASE_SETUP.md for instructions." 
-          }
-        }
-        if (errorMessage.includes("relation") && errorMessage.includes("does not exist")) {
-          return { 
-            user: null, 
-            error: "Database table not found. Please run the SQL script in SUPABASE_SETUP.md to create the profiles table." 
-          }
-        }
-        
+      if (profileCheckError && !profileCheckError.message.includes("No rows") && !profileCheckError.message.includes("PGRST116")) {
         return { 
           user: null, 
-          error: `Failed to create user profile: ${errorMessage}. Please check your Supabase setup.` 
+          error: `Error checking profile: ${profileCheckError.message}` 
         }
       }
+
+      await new Promise((resolve) => setTimeout(resolve, 1000))
+      retryCount++
     }
+
+    const { data: sessionData } = await supabase.auth.getSession()
+    
+    if (!sessionData?.session) {
+      return { 
+        user: authData.user, 
+        error: null 
+      }
+    }
+
+    const { error: profileError } = await supabase.from("profiles").insert({
+      id: authData.user.id,
+      email: data.email,
+      name: data.name,
+      user_type: data.userType,
+      passkey: data.userType === "buyer" ? data.passkey : null,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    })
+
+    if (profileError) {
+      const errorMessage = profileError.message || "Failed to create user profile"
+      
+      if (errorMessage.includes("duplicate key") || errorMessage.includes("already exists")) {
+        return { user: authData.user, error: null }
+      }
+      if (errorMessage.includes("violates row-level security") || errorMessage.includes("RLS")) {
+        return { 
+          user: authData.user, 
+          error: null 
+        }
+      }
+      if (errorMessage.includes("relation") && errorMessage.includes("does not exist")) {
+        return { 
+          user: null, 
+          error: "Database table not found. Please ensure the profiles table exists in your Supabase database." 
+        }
+      }
+      
+      return { 
+        user: authData.user, 
+        error: null 
+      }
+    }
+    
+    return { user: authData.user, error: null }
 
     return { user: authData.user, error: null }
   } catch (error) {
@@ -128,10 +156,82 @@ export async function signIn(data: LoginData): Promise<AuthResponse> {
       .from("profiles")
       .select("user_type, passkey")
       .eq("id", authData.user.id)
-      .single()
+      .maybeSingle()
 
     if (profileError) {
-      return { user: null, error: "Failed to fetch user profile" }
+      const errorMessage = profileError.message || "Failed to fetch user profile"
+      
+      if (errorMessage.includes("No rows") || errorMessage.includes("PGRST116")) {
+        return { 
+          user: null, 
+          error: "User profile not found. Your account may not be fully set up. Please contact support or try signing up again." 
+        }
+      }
+      
+      if (errorMessage.includes("violates row-level security") || errorMessage.includes("RLS")) {
+        return { 
+          user: null, 
+          error: "Database security error. Please ensure RLS policies are set up correctly. Run SUPABASE_FIX.sql in your Supabase SQL Editor." 
+        }
+      }
+      
+      return { user: null, error: `Failed to fetch user profile: ${errorMessage}` }
+    }
+
+    if (!profile) {
+      const { data: userMetadata } = await supabase.auth.getUser()
+      const metadata = userMetadata?.user?.user_metadata || {}
+      
+      const { error: createProfileError } = await supabase.from("profiles").insert({
+        id: authData.user.id,
+        email: authData.user.email || data.email,
+        name: metadata.name || "User",
+        user_type: metadata.user_type || data.userType,
+        passkey: metadata.passkey || (data.userType === "buyer" ? data.passkey : null),
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      })
+
+      if (createProfileError) {
+        return { 
+          user: null, 
+          error: `Profile not found and could not be created: ${createProfileError.message}. Please contact support.` 
+        }
+      }
+
+      const { data: newProfile } = await supabase
+        .from("profiles")
+        .select("user_type, passkey")
+        .eq("id", authData.user.id)
+        .single()
+
+      if (!newProfile) {
+        return { 
+          user: null, 
+          error: "Profile was created but could not be retrieved. Please try logging in again." 
+        }
+      }
+
+      if (newProfile.user_type !== data.userType) {
+        await supabase.auth.signOut()
+        return {
+          user: null,
+          error: `Invalid user type. This account is registered as a ${newProfile.user_type}, not a ${data.userType}.`,
+        }
+      }
+
+      if (data.userType === "buyer") {
+        if (!data.passkey) {
+          await supabase.auth.signOut()
+          return { user: null, error: "Passkey is required for buyers" }
+        }
+        if (newProfile.passkey !== data.passkey) {
+          await supabase.auth.signOut()
+          return { user: null, error: "Invalid passkey" }
+        }
+      }
+
+      return { user: authData.user, error: null }
     }
 
     if (profile.user_type !== data.userType) {

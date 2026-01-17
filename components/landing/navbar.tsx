@@ -1,21 +1,78 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Menu, X, Recycle } from "lucide-react"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { supabase } from "@/lib/supabase/client"
+import { getCurrentUser, getUserProfile, signOut } from "@/lib/auth"
+import type { User } from "@supabase/supabase-js"
+import { useRouter } from "next/navigation"
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
+  const [user, setUser] = useState<User | null>(null)
+  const [userName, setUserName] = useState<string>("")
+  const router = useRouter()
 
   const navLinks = [
     { href: "/marketplace", label: "Marketplace" },
     { href: "/ai-analysis", label: "AI Analysis" },
     { href: "/impact", label: "Impact" },
-    { href: "/profile", label: "Profile" },
   ]
+
+  useEffect(() => {
+    const checkUser = async () => {
+      const currentUser = await getCurrentUser()
+      setUser(currentUser)
+      
+      if (currentUser) {
+        const { profile } = await getUserProfile(currentUser.id)
+        if (profile?.name) {
+          setUserName(profile.name)
+        }
+      }
+    }
+
+    checkUser()
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null)
+      if (session?.user) {
+        getUserProfile(session.user.id).then(({ profile }) => {
+          if (profile?.name) {
+            setUserName(profile.name)
+          }
+        })
+      } else {
+        setUserName("")
+      }
+    })
+
+    return () => subscription.unsubscribe()
+  }, [])
+
+  const handleSignOut = async () => {
+    await signOut()
+    setUser(null)
+    setUserName("")
+    router.push("/")
+    router.refresh()
+  }
+
+  const getInitial = () => {
+    if (userName) {
+      return userName.charAt(0).toUpperCase()
+    }
+    if (user?.email) {
+      return user.email.charAt(0).toUpperCase()
+    }
+    return "U"
+  }
 
   return (
     <motion.nav
@@ -53,16 +110,24 @@ export function Navbar() {
           {/* Desktop CTAs */}
           <div className="hidden md:flex items-center gap-3">
             <ThemeToggle />
-            <Link href="/login">
-              <Button variant="ghost" className="text-muted-foreground hover:text-foreground hover:bg-secondary/50">
-                Login
-              </Button>
-            </Link>
-            <Link href="/signup">
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Button className="bg-primary hover:bg-primary/90 text-primary-foreground px-5">Start Selling</Button>
-              </motion.div>
-            </Link>
+            {user ? (
+              <Link href="/profile">
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <button
+                    className="w-10 h-10 rounded-full bg-primary text-primary-foreground font-semibold flex items-center justify-center hover:bg-primary/90 transition-colors"
+                    title={userName || user.email || "User"}
+                  >
+                    {getInitial()}
+                  </button>
+                </motion.div>
+              </Link>
+            ) : (
+              <Link href="/login">
+                <Button variant="ghost" className="text-muted-foreground hover:text-foreground hover:bg-secondary/50">
+                  Login
+                </Button>
+              </Link>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -98,16 +163,24 @@ export function Navbar() {
                   <ThemeToggle />
                   <span className="text-sm text-muted-foreground">Toggle theme</span>
                 </div>
-                <Link href="/login">
-                  <Button variant="ghost" className="w-full justify-start text-muted-foreground">
-                    Login
-                  </Button>
-                </Link>
-                <Link href="/signup">
-                  <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
-                    Start Selling
-                  </Button>
-                </Link>
+                {user ? (
+                  <Link href="/profile" onClick={() => setIsOpen(false)}>
+                    <Button variant="ghost" className="w-full justify-start text-muted-foreground">
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground font-semibold flex items-center justify-center text-sm">
+                          {getInitial()}
+                        </div>
+                        <span>{userName || user.email || "Profile"}</span>
+                      </div>
+                    </Button>
+                  </Link>
+                ) : (
+                  <Link href="/login" onClick={() => setIsOpen(false)}>
+                    <Button variant="ghost" className="w-full justify-start text-muted-foreground">
+                      Login
+                    </Button>
+                  </Link>
+                )}
               </div>
             </div>
           </motion.div>

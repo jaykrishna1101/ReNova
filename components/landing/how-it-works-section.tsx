@@ -10,36 +10,79 @@ function AIScannerSection() {
   const isInView = useInView(ref, { once: true, margin: "-100px" })
   const [scanProgress, setScanProgress] = useState(0)
   const [showResults, setShowResults] = useState(false)
-  const [hasStarted, setHasStarted] = useState(false)
+  const intervalRef = useRef<NodeJS.Timeout | null>(null)
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const startTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const hasStartedRef = useRef(false)
 
   useEffect(() => {
-    if (isInView && !hasStarted) {
-      setHasStarted(true)
+    const startAnimation = () => {
+      if (hasStartedRef.current) return
+      hasStartedRef.current = true
+      
       setScanProgress(0)
       setShowResults(false)
 
-      const interval = setInterval(() => {
-        setScanProgress((prev) => {
-          if (prev >= 100) {
-            clearInterval(interval)
-            setTimeout(() => {
+      startTimeoutRef.current = setTimeout(() => {
+        const startTime = Date.now()
+        const duration = 3500
+
+        const updateProgress = () => {
+          const elapsed = Date.now() - startTime
+          const progress = Math.min(Math.floor((elapsed / duration) * 100), 100)
+          
+          setScanProgress(progress)
+
+          if (progress < 100) {
+            intervalRef.current = setTimeout(updateProgress, 35)
+          } else {
+            timeoutRef.current = setTimeout(() => {
               setShowResults(true)
             }, 300)
-            return 100
           }
-          return prev + 1
-        })
-      }, 35)
+        }
 
-      return () => clearInterval(interval)
+        updateProgress()
+      }, 3500)
     }
-  }, [isInView, hasStarted])
 
-  const results = [
-    { label: "Lead", value: "40%", color: "text-orange-400", bg: "bg-orange-500/20" },
-    { label: "Mercury", value: "High", color: "text-red-400", bg: "bg-red-500/20" },
-    { label: "Toxicity Level", value: "High", color: "text-red-500", bg: "bg-red-500/20" },
-  ]
+    if (isInView) {
+      startAnimation()
+    }
+
+    const fallbackTimeout = setTimeout(() => {
+      startAnimation()
+    }, 3000)
+
+    return () => {
+      clearTimeout(fallbackTimeout)
+      if (startTimeoutRef.current) {
+        clearTimeout(startTimeoutRef.current)
+        startTimeoutRef.current = null
+      }
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+        timeoutRef.current = null
+      }
+      if (intervalRef.current) {
+        clearTimeout(intervalRef.current)
+        intervalRef.current = null
+      }
+    }
+  }, [isInView])
+
+  const scanResults = {
+    toxicity_level: "High",
+    recyclable: true,
+    harmful_substances: [
+      "Lead",
+      "Mercury",
+      "Cadmium",
+      "Brominated Flame Retardants (BFRs)",
+      "Lithium",
+      "Arsenic"
+    ]
+  }
 
   return (
     <div ref={ref} className="grid lg:grid-cols-2 gap-12 items-center">
@@ -107,19 +150,47 @@ function AIScannerSection() {
             animate={showResults ? { opacity: 1, y: 0 } : {}}
             className="space-y-3"
           >
-            {showResults &&
-              results.map((result, i) => (
+            {showResults && (
+              <>
                 <motion.div
-                  key={result.label}
                   initial={{ opacity: 0, scale: 0.8, x: -20 }}
                   animate={{ opacity: 1, scale: 1, x: 0 }}
-                  transition={{ delay: i * 0.15 }}
-                  className={`flex items-center justify-between p-3 rounded-xl ${result.bg} border border-border/30`}
+                  transition={{ delay: 0.1 }}
+                  className="flex items-center justify-between p-3 rounded-xl bg-red-500/20 border border-border/30"
                 >
-                  <span className="text-foreground text-sm">{result.label}</span>
-                  <span className={`font-bold ${result.color}`}>{result.value}</span>
+                  <span className="text-foreground text-sm font-medium">Toxicity Level</span>
+                  <span className="font-bold text-red-500">{scanResults.toxicity_level}</span>
                 </motion.div>
-              ))}
+
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8, x: -20 }}
+                  animate={{ opacity: 1, scale: 1, x: 0 }}
+                  transition={{ delay: 0.2 }}
+                  className="flex items-center justify-between p-3 rounded-xl bg-primary/20 border border-border/30"
+                >
+                  <span className="text-foreground text-sm font-medium">Recyclable</span>
+                  <span className="font-bold text-primary">{scanResults.recyclable ? "Yes" : "No"}</span>
+                </motion.div>
+
+                <div className="pt-2">
+                  <p className="text-sm font-medium text-foreground mb-2">Harmful Substances Detected:</p>
+                  <div className="space-y-2">
+                    {scanResults.harmful_substances.map((substance, i) => (
+                      <motion.div
+                        key={substance}
+                        initial={{ opacity: 0, scale: 0.8, x: -20 }}
+                        animate={{ opacity: 1, scale: 1, x: 0 }}
+                        transition={{ delay: 0.3 + i * 0.1 }}
+                        className="flex items-center gap-2 p-2 rounded-lg bg-orange-500/10 border border-orange-500/20"
+                      >
+                        <div className="w-1.5 h-1.5 rounded-full bg-orange-500" />
+                        <span className="text-sm text-foreground">{substance}</span>
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
           </motion.div>
         </div>
       </motion.div>
