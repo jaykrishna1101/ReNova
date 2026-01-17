@@ -1,7 +1,7 @@
 An overall workflow of AI E Waste recycling system
 when a user enters
       |
-Role selection(seller/buyer)
+Role selection(seller/buyer)+LOGIN
   --------------------|-------------------------
 User                                           buyer
  |                                               |
@@ -11,3 +11,4 @@ toxicity,recyclable,harmful components       if object specific :
   |                                          buyer gets a map on screen with the specific object user location
 user can either list it for sale by          else:
 sharing there address or not                 buyer gets a map with all the components user address in it
+
