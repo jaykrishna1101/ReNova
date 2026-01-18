@@ -243,15 +243,14 @@ export function SellEwastePage() {
               <div key={step.id} className="flex items-center">
                 <div className="flex flex-col items-center">
                   <div
-                    className={`w-12 h-12 rounded-full flex items-center justify-center font-semibold transition-all ${
-                      phase === step.id
+                    className={`w-12 h-12 rounded-full flex items-center justify-center font-semibold transition-all ${phase === step.id
                         ? "bg-primary text-primary-foreground scale-110"
                         : phase === "analyze" && step.id === "capture"
                           ? "bg-primary/20 text-primary"
                           : phase === "locate" && ["capture", "analyze"].includes(step.id)
                             ? "bg-primary/20 text-primary"
                             : "bg-muted text-muted-foreground"
-                    }`}
+                      }`}
                   >
                     {phase === "locate" && ["capture", "analyze"].includes(step.id) ? (
                       <CheckCircle2 className="w-6 h-6" />
@@ -260,22 +259,20 @@ export function SellEwastePage() {
                     )}
                   </div>
                   <span
-                    className={`mt-2 text-sm font-medium ${
-                      phase === step.id ? "text-primary" : "text-muted-foreground"
-                    }`}
+                    className={`mt-2 text-sm font-medium ${phase === step.id ? "text-primary" : "text-muted-foreground"
+                      }`}
                   >
                     {step.label}
                   </span>
                 </div>
                 {index < 2 && (
                   <div
-                    className={`h-1 w-16 md:w-24 mx-4 transition-all ${
-                      phase === "analyze" && step.id === "capture"
+                    className={`h-1 w-16 md:w-24 mx-4 transition-all ${phase === "analyze" && step.id === "capture"
                         ? "bg-primary"
                         : phase === "locate"
                           ? "bg-primary"
                           : "bg-muted"
-                    }`}
+                      }`}
                   />
                 )}
               </div>

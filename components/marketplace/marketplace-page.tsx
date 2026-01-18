@@ -9,10 +9,10 @@ import {
   MapPin,
   AlertCircle,
   Recycle,
-  DollarSign,
   X,
   ChevronRight,
   SlidersHorizontal,
+  IndianRupee,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -28,21 +28,22 @@ import dynamic from "next/dynamic"
 const MapContainer = dynamic(
   () => import("react-leaflet").then((mod) => mod.MapContainer),
   { ssr: false, loading: () => <div className="w-full h-full flex items-center justify-center bg-secondary/50"><div className="text-muted-foreground">Loading map...</div></div> }
-)
+) as any
 const TileLayer = dynamic(
   () => import("react-leaflet").then((mod) => mod.TileLayer),
   { ssr: false }
-)
+) as any
 const Marker = dynamic(
   () => import("react-leaflet").then((mod) => mod.Marker),
   { ssr: false }
-)
+) as any
 const Popup = dynamic(
   () => import("react-leaflet").then((mod) => mod.Popup),
   { ssr: false }
-)
+) as any
 
 if (typeof window !== "undefined") {
+  // @ts-ignore
   import("leaflet/dist/leaflet.css")
 }
 
@@ -125,7 +126,7 @@ function ListingCard({ listing, distance, onHover, onLeave, onClick }: ListingCa
           <div>
             <h3 className="font-semibold text-foreground mb-1">{listing.product_name}</h3>
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <DollarSign className="w-4 h-4" />
+              <IndianRupee className="w-4 h-4" />
               <span className="font-medium text-foreground">
                 ₹{listing.market_estimate_min} - ₹{listing.market_estimate_max}
               </span>
@@ -228,9 +229,9 @@ export function MarketplacePage() {
       const a =
         Math.sin(dLat / 2) * Math.sin(dLat / 2) +
         Math.cos((userLocation.lat * Math.PI) / 180) *
-          Math.cos((lat * Math.PI) / 180) *
-          Math.sin(dLng / 2) *
-          Math.sin(dLng / 2)
+        Math.cos((lat * Math.PI) / 180) *
+        Math.sin(dLng / 2) *
+        Math.sin(dLng / 2)
       const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
       return R * c
     },
@@ -253,7 +254,7 @@ export function MarketplacePage() {
 
   const createMarkerIcon = useCallback((toxicity: string) => {
     if (typeof window === "undefined") return null
-    
+
     const { Icon } = require("leaflet")
     const color = (() => {
       switch (toxicity) {

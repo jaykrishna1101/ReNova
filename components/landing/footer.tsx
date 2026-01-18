@@ -95,15 +95,30 @@ export function Footer() {
         <div className="mt-12 pt-8 border-t border-border/50 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-muted-foreground text-sm">© 2026 ReNova. Building a sustainable future.</p>
           <div className="flex items-center gap-4">
-            {[Github, Twitter, Linkedin].map((Icon, i) => (
-              <Link
-                key={i}
-                href="#"
-                className="w-9 h-9 rounded-lg bg-secondary/50 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
-              >
-                <Icon className="w-4 h-4" />
-              </Link>
-            ))}
+            <Link
+              href="https://github.com/jaykrishna1101"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-9 h-9 rounded-lg bg-secondary/50 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
+            >
+              <Github className="w-4 h-4" />
+            </Link>
+            <Link
+              href="https://x.com/jaykrishna1101"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-9 h-9 rounded-lg bg-secondary/50 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
+            >
+              <Twitter className="w-4 h-4" />
+            </Link>
+            <Link
+              href="https://www.linkedin.com/in/jaykrishna-khond-68a36822a"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-9 h-9 rounded-lg bg-secondary/50 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
+            >
+              <Linkedin className="w-4 h-4" />
+            </Link>
           </div>
         </div>
       </div>
