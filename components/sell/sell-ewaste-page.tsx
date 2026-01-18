@@ -427,7 +427,7 @@ export function SellEwastePage() {
                       <div className="p-4 rounded-xl bg-primary/20">
                         <p className="text-sm font-medium mb-1 text-foreground">Expected Price</p>
                         <p className="text-2xl font-bold text-primary">
-                          ₹{analysisResult.market_estimate_min} - ₹{analysisResult.market_estimate_max} ⭐
+                          ₹{analysisResult.market_estimate_min} - ₹{analysisResult.market_estimate_max} *
                         </p>
                       </div>
                     </div>

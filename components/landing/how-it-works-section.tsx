@@ -330,9 +330,9 @@ function StatsSection() {
   const isInView = useInView(ref, { once: true, margin: "-100px" })
 
   const stats = [
-    { icon: Leaf, value: "500kg+", label: "Lead Kept from Soil" },
-    { icon: ShieldCheck, value: "1,200+", label: "Verified Buyers" },
-    { icon: Clock, value: "15min", label: "Average Pickup Time" },
+    { icon: Leaf, value: "500g+", label: "Lead Kept from Soil" },
+    { icon: ShieldCheck, value: "10+", label: "Verified Buyers" },
+    { icon: Clock, value: "60min", label: "Average Pickup Time" },
     { icon: AlertTriangle, value: "98%", label: "AI Detection Accuracy" },
   ]
 

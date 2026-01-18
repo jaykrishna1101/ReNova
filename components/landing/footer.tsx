@@ -26,39 +26,68 @@ export function Footer() {
           <div>
             <h4 className="text-foreground font-medium mb-4">Platform</h4>
             <ul className="space-y-2">
-              {["Marketplace", "AI Analysis", "Impact", "Pricing"].map((item) => (
-                <li key={item}>
-                  <Link href="#" className="text-muted-foreground hover:text-foreground text-sm transition-colors">
-                    {item}
-                  </Link>
-                </li>
-              ))}
+              <li>
+                <Link href="/marketplace" className="text-muted-foreground hover:text-foreground text-sm transition-colors">
+                  Marketplace
+                </Link>
+              </li>
+              <li>
+                <Link href="/sell" className="text-muted-foreground hover:text-foreground text-sm transition-colors">
+                  Sell E-Waste
+                </Link>
+              </li>
+              <li>
+                <Link href="#impact" className="text-muted-foreground hover:text-foreground text-sm transition-colors">
+                  Impact
+                </Link>
+              </li>
             </ul>
           </div>
 
           <div>
             <h4 className="text-foreground font-medium mb-4">Company</h4>
             <ul className="space-y-2">
-              {["About", "Blog", "Careers", "Contact"].map((item) => (
-                <li key={item}>
-                  <Link href="#" className="text-muted-foreground hover:text-foreground text-sm transition-colors">
-                    {item}
-                  </Link>
-                </li>
-              ))}
+              <li>
+                <Link href="/" className="text-muted-foreground hover:text-foreground text-sm transition-colors">
+                  About
+                </Link>
+              </li>
+              <li>
+                <Link href="/" className="text-muted-foreground hover:text-foreground text-sm transition-colors">
+                  Blog
+                </Link>
+              </li>
+              <li>
+                <Link href="/" className="text-muted-foreground hover:text-foreground text-sm transition-colors">
+                  Careers
+                </Link>
+              </li>
+              <li>
+                <Link href="mailto:jkkhond@gmail.com" className="text-muted-foreground hover:text-foreground text-sm transition-colors">
+                  Contact
+                </Link>
+              </li>
             </ul>
           </div>
 
           <div>
             <h4 className="text-foreground font-medium mb-4">Legal</h4>
             <ul className="space-y-2">
-              {["Privacy", "Terms", "Security"].map((item) => (
-                <li key={item}>
-                  <Link href="#" className="text-muted-foreground hover:text-foreground text-sm transition-colors">
-                    {item}
-                  </Link>
-                </li>
-              ))}
+              <li>
+                <Link href="/" className="text-muted-foreground hover:text-foreground text-sm transition-colors">
+                  Privacy
+                </Link>
+              </li>
+              <li>
+                <Link href="/" className="text-muted-foreground hover:text-foreground text-sm transition-colors">
+                  Terms
+                </Link>
+              </li>
+              <li>
+                <Link href="/" className="text-muted-foreground hover:text-foreground text-sm transition-colors">
+                  Security
+                </Link>
+              </li>
             </ul>
           </div>
         </div>
